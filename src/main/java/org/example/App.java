@@ -1,36 +1,33 @@
 package org.example;
 
 import org.example.Discounts.VipDiscount;
-import org.example.Exceptions.InvalidCustomerEmailException;
-import org.example.Exceptions.InvalidPriceException;
-import org.example.Models.Cart;
-import org.example.Models.Checkout;
-import org.example.Models.Customer;
-import org.example.Models.Product;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.Factories.CustomerFactory;
+import org.example.Factories.ProductFactory;
+import org.example.Models.*;
+import org.example.Repositories.CustomerRepository;
+import org.example.Repositories.ProductRepository;
 
 public class App {
     public static void main(String[] args) {
-        Logger log = LoggerFactory.getLogger(App.class);
-        try {
-            Product tomato = new Product("tomato", 4.49);
-            Product cucumber = new Product("cucumber", 6.99);
-            Product avocado = new Product("avocado", 9.99);
-            Product bread = new Product("bread", 24.49);
+        ProductFactory productFactory = new ProductFactory();
+        ProductRepository productRepository = new ProductRepository();
+        CustomerFactory customerFactory = new CustomerFactory();
+        CustomerRepository customerRepository = new CustomerRepository();
 
-            Customer customer = new Customer("Omar", "omaraman@gmail.com", new VipDiscount());
-            Cart cart = new Cart();
+        productRepository.addProduct("tomato", productFactory.createProduct("Tomato", 4.49));
+        productRepository.addProduct("cucumber", productFactory.createProduct("Cucumber", 6.99));
+        productRepository.addProduct("avocado", productFactory.createProduct("Avocado", 9.99));
+        productRepository.addProduct("bread", productFactory.createProduct("Bread", 24.49));
 
-            cart.add(tomato, 5);
-            cart.add(cucumber, 1);
-            cart.add(avocado, 2);
-            cart.add(bread, 6);
+        customerRepository.addCustomer(customerFactory.createCustomer("Omar", "omaraman@gmail.com", new VipDiscount()));
 
-            Checkout checkout = new Checkout();
-            checkout.checkout(cart, customer);
-        } catch (InvalidCustomerEmailException | InvalidPriceException e) {
-            log.error(e.getMessage());
-        }
+        Cart cart = new Cart();
+        cart.add(productRepository.getProducts().get("tomato"), 5);
+        cart.add(productRepository.getProducts().get("cucumber"), 1);
+        cart.add(productRepository.getProducts().get("avocado"), 2);
+        cart.add(productRepository.getProducts().get("bread"), 1);
+
+        Checkout checkout = new Checkout();
+        checkout.checkout(cart, customerRepository.getCustomers().getFirst());
     }
 }
