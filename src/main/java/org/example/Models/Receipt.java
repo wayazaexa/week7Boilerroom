@@ -1,25 +1,26 @@
 package org.example.Models;
 
-public record Receipt(Cart cart, Customer customer) {
+import org.example.Discounts.DiscountPolicy;
 
-    public double getRawTotalCost() {
+public record Receipt(Cart cart) {
+
+    private double getRawTotalCost() {
         return cart.getCartList().stream()
                 .mapToDouble(entry -> entry.product().price() * entry.quantity())
                 .sum();
     }
 
-    public double getTotalCost() {
-        return getRawTotalCost() * customer.discountPolicy().getDiscount();
+    private double getTotalCost(DiscountPolicy discountPolicy) {
+        return getRawTotalCost() * discountPolicy.getDiscount();
     }
 
-    @Override
-    public String toString() {
-        String roundedTotal = String.format("%.2f", getTotalCost());
+    public String toString(DiscountPolicy discountPolicy) {
         String roundedRawTotal = String.format("%.2f", getRawTotalCost());
+        String roundedTotal = String.format("%.2f", getTotalCost(discountPolicy));
         return "Receipt:\n"
                 + cart +
                 "\nCost: " + roundedRawTotal +
-                "\nDiscount: " + customer.discountPolicy() +
+                "\nDiscount: " + discountPolicy +
                 "\nTotal cost: " + roundedTotal;
     }
 }
