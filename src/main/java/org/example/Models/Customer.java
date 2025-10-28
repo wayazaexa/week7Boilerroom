@@ -1,19 +1,6 @@
 package org.example.Models;
 
-public class Customer {
-    private String name;
-    private String email;
+import org.example.Discounts.DiscountPolicy;
 
-    public Customer(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
+public record Customer(String name, String email, DiscountPolicy discountPolicy) {
 }
